@@ -1,7 +1,8 @@
 const keys = {
   left: 37,
-  right: 39
-}
+  right: 39,
+  space: 32,
+};
 
 let game = {
   ctx: null,
@@ -10,6 +11,8 @@ let game = {
   blocks: [],
   rows: 4,
   cols: 8,
+  width: 640,
+  height: 360,
   sprites: {
     background: null,
     ball: null,
@@ -25,7 +28,9 @@ let game = {
 
   setEvents() {
     window.addEventListener("keydown", (e) => {
-      if (e.keyCode === keys.left || e.keyCode === keys.right) {
+      if (e.keyCode === keys.space) {
+        this.platform.fire();
+      } else if (e.keyCode === keys.left || e.keyCode === keys.right) {
         this.platform.start(e.keyCode);
       }
       //console.log(e.keyCode);
@@ -66,6 +71,7 @@ let game = {
 
   update() {
     this.platform.move();
+    this.ball.move();
   },
 
   run() {
@@ -78,6 +84,8 @@ let game = {
   },
 
   render() {
+    this.ctx.clearRect(0, 0, this.width, this.height);
+
     this.ctx.drawImage(this.sprites.background, 0, 0);
     this.ctx.drawImage(
       this.sprites.ball,
@@ -107,6 +115,10 @@ let game = {
       this.run();
     });
   },
+
+  random(min, max) {
+    return Math.round(Math.random() * (max - min) + min);
+  }
 };
 
 game.ball = {
@@ -114,6 +126,21 @@ game.ball = {
   y: 280,
   width: 20,
   height: 20,
+  dx: 0,
+  dy: 0,
+  velocity: 3,
+  start() {
+    this.dx = game.random(-this.velocity, this.velocity);
+    this.dy = -this.velocity;
+  },
+  move() {
+    if (this.dx) {
+      this.x += this.dx;
+    }
+    if (this.dy) {
+      this.y += this.dy;
+    }
+  },
 };
 
 game.platform = {
@@ -121,6 +148,13 @@ game.platform = {
   y: 300,
   velocity: 6,
   dx: 0,
+  ball: game.ball,
+  fire() {
+    if (this.ball) {
+      this.ball.start();
+      this.ball = null;
+    }
+  },
   start(direction) {
     if (direction === keys.left) {
       this.dx = -this.velocity;
@@ -134,9 +168,11 @@ game.platform = {
   move() {
     if (this.dx) {
       this.x += this.dx;
-      game.ball.x += this.dx;
+      if (this.ball) {
+        this.ball.x += this.dx;
+      }
     }
-  }
+  },
 };
 
 window.addEventListener("load", () => {
