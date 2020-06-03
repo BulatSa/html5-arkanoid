@@ -64,6 +64,8 @@ let game = {
         this.blocks.push({
           x: 64 * col + 65,
           y: 24 * row + 35,
+          width: 60,
+          height: 20,
         });
       }
     }
@@ -72,6 +74,12 @@ let game = {
   update() {
     this.platform.move();
     this.ball.move();
+
+    for (let block of this.blocks) {
+      if (this.ball.collide(block)) {
+        this.ball.crushBlock(block);
+      }
+    }
   },
 
   run() {
@@ -118,7 +126,7 @@ let game = {
 
   random(min, max) {
     return Math.round(Math.random() * (max - min) + min);
-  }
+  },
 };
 
 game.ball = {
@@ -140,6 +148,22 @@ game.ball = {
     if (this.dy) {
       this.y += this.dy;
     }
+  },
+  collide(element) {
+    let x = this.x + this.dx;
+    let y = this.y + this.dy;
+
+    if (
+      x + this.width > element.x && // удар слева
+      x < element.x + element.width && // удар справа
+      y + this.height > element.y && // удар сверху
+      y < element.y + element.height // удар снизу
+    ) {
+      return true;
+    }
+  },
+  crushBlock(element) {
+    this.dy = -this.dy;
   },
 };
 
