@@ -54,6 +54,7 @@ let game = {
     for (let key in this.sprites) {
       this.sprites[key] = new Image();
       this.sprites[key].src = `img/${key}.png`;
+      this.sprites[key].style = 'display: block';
       this.sprites[key].addEventListener("load", onImageLoad);
     }
   },
@@ -74,6 +75,7 @@ let game = {
 
   update() {
     this.ball.collideWorldBounds();
+    this.platform.collideWorldBounds();
     this.collideBlocks();
     this.collidePlatform();
 
@@ -212,6 +214,9 @@ game.ball = {
     this.dy = -this.dy;
   },
   bumpPlatform(platform) {
+    if (game.platform.dx) {
+      this.x += game.platform.dx;
+    }
     if (this.dy > 0) {
       this.dy = -this.velocity;
       const touchX = this.x + this.width / 2;
@@ -250,6 +255,23 @@ game.platform = {
       if (this.ball) {
         this.ball.x += this.dx;
       }
+    }
+  },
+  collideWorldBounds() {
+    const x = this.x + this.dx;
+    const platformLeftSide = x;
+    const platformRightSide = x + this.width;
+
+    const worldLeftSide = 0;
+    const worldRightSide = game.width;
+
+    if (platformLeftSide <= worldLeftSide) {
+      this.x = 0;
+      this.stop();
+    }
+    if (platformRightSide >= worldRightSide) {
+      this.x = game.width - this.width;
+      this.stop();
     }
   },
   getTouchOffset(x) {
