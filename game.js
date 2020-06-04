@@ -29,6 +29,12 @@ let game = {
     //this.canvas = document.getElementById("mycanvas");
     this.ctx = document.getElementById("mycanvas").getContext("2d");
     this.setEvents();
+    this.setTextFont();
+  },
+
+  setTextFont() {
+    this.ctx.font = "20px Arial";
+    this.ctx.fillStyle = "#fff";
   },
 
   setEvents() {
@@ -48,7 +54,8 @@ let game = {
 
   preload(callback) {
     let loaded = 0;
-    const required = Object.keys(this.sprites).length + Object.keys(this.sounds).length;
+    const required =
+      Object.keys(this.sprites).length + Object.keys(this.sounds).length;
     const onResourceLoad = () => {
       loaded++;
       if (loaded >= required) {
@@ -58,8 +65,6 @@ let game = {
 
     this.preloadSprites(onResourceLoad);
     this.preloadSounds(onResourceLoad);
-
-    
   },
 
   preloadSprites(onResourceLoad) {
@@ -75,7 +80,9 @@ let game = {
     for (let key in this.sounds) {
       this.sounds[key] = new Audio();
       this.sounds[key].src = `sounds/${key}.mp3`;
-      this.sounds[key].addEventListener("canplaythrough", onResourceLoad, {once: true});
+      this.sounds[key].addEventListener("canplaythrough", onResourceLoad, {
+        once: true,
+      });
     }
   },
 
@@ -161,6 +168,7 @@ let game = {
     );
     this.ctx.drawImage(this.sprites.platform, this.platform.x, this.platform.y);
     this.renderBlocks();
+    this.ctx.fillText(`Score: ${this.score}`, 15, 20);
   },
 
   renderBlocks() {
