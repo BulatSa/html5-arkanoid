@@ -19,6 +19,7 @@ let game = {
     platform: null,
     block: null,
   },
+  runGame: false,
 
   init() {
     //this.canvas = document.getElementById("mycanvas");
@@ -54,7 +55,7 @@ let game = {
     for (let key in this.sprites) {
       this.sprites[key] = new Image();
       this.sprites[key].src = `img/${key}.png`;
-      this.sprites[key].style = 'display: block';
+      this.sprites[key].style = "display: block";
       this.sprites[key].addEventListener("load", onImageLoad);
     }
   },
@@ -98,12 +99,13 @@ let game = {
   },
 
   run() {
-    window.requestAnimationFrame(() => {
-      this.update();
-      this.render();
-      this.run();
-      //console.log("render");
-    });
+    if (this.runGame) {
+      window.requestAnimationFrame(() => {
+        this.update();
+        this.render();
+        this.run();
+      });
+    }
   },
 
   render() {
@@ -136,9 +138,26 @@ let game = {
   start() {
     this.init();
     this.preload(() => {
+      this.runGame = true;
       this.create();
       this.run();
     });
+  },
+
+  stop() {
+    this.runGame = false;
+  },
+
+  alertOver() {
+    window.alert("Game over!");
+  },
+
+  alertWin() {
+    window.alert("You win! :)");
+  },
+
+  refresh() {
+    document.location.reload();
   },
 
   random(min, max) {
@@ -206,7 +225,9 @@ game.ball = {
       this.dy = this.velocity;
     }
     if (ballBottomSide > worldBottomSide) {
-      this.y = worldBottomSide - this.height;
+      game.stop();
+      game.alertOver();
+      game.refresh();
     }
   },
   crushBlock(block) {
