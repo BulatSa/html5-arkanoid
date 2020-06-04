@@ -114,14 +114,8 @@ let game = {
     this.score++;
 
     if (this.score >= this.blocks.length) {
-      this.end("You win! :)");
+      this.end(`You win! :) Your score: ${game.score}`);
     }
-  },
-
-  end(msg) {
-    this.stop();
-    this.alert(msg);
-    this.refresh();
   },
 
   collideBlocks() {
@@ -157,7 +151,7 @@ let game = {
     this.ctx.drawImage(this.sprites.background, 0, 0);
     this.ctx.drawImage(
       this.sprites.ball,
-      0,
+      this.ball.frame * this.ball.width,
       0,
       this.ball.width,
       this.ball.height,
@@ -188,6 +182,12 @@ let game = {
     });
   },
 
+  end(msg) {
+    this.stop();
+    this.alert(msg);
+    this.refresh();
+  },
+
   stop() {
     this.runGame = false;
   },
@@ -213,9 +213,19 @@ game.ball = {
   dx: 0,
   dy: 0,
   velocity: 3,
+  frame: 0,
   start() {
     this.dx = game.random(-this.velocity, this.velocity);
     this.dy = -this.velocity;
+    this.animate();
+  },
+  animate() {
+    setInterval(()=>{
+      this.frame++;
+      if (this.frame > 3) {
+        this.frame = 0;
+      }
+    }, 100);
   },
   move() {
     if (this.dx) {
@@ -268,7 +278,7 @@ game.ball = {
       game.sounds.bump.play();
     }
     if (ballBottomSide > worldBottomSide) {
-      game.end("Game over!");
+      game.end(`Game over! Your score: ${game.score}`);
     }
   },
   crushBlock(block) {
