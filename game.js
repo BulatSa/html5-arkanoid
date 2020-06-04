@@ -66,6 +66,7 @@ let game = {
           y: 24 * row + 35,
           width: 60,
           height: 20,
+          active: true
         });
       }
     }
@@ -81,7 +82,7 @@ let game = {
 
   collideBlocks() {
     for (let block of this.blocks) {
-      if (this.ball.collide(block)) {
+      if (block.active && this.ball.collide(block)) {
         this.ball.crushBlock(block);
       }
     }
@@ -123,7 +124,9 @@ let game = {
 
   renderBlocks() {
     for (let block of this.blocks) {
-      this.ctx.drawImage(this.sprites.block, block.x, block.y);
+      if (block.active) {
+        this.ctx.drawImage(this.sprites.block, block.x, block.y);
+      }
     }
   },
 
@@ -173,7 +176,8 @@ game.ball = {
       return true;
     }
   },
-  crushBlock(element) {
+  crushBlock(block) {
+    block.active = false;
     this.dy = -this.dy;
   },
   bumpPlatform(platform) {
