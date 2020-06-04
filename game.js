@@ -66,18 +66,19 @@ let game = {
           y: 24 * row + 35,
           width: 60,
           height: 20,
-          active: true
+          active: true,
         });
       }
     }
   },
 
   update() {
-    this.platform.move();
-    this.ball.move();
-
+    this.ball.collideWorldBounds();
     this.collideBlocks();
     this.collidePlatform();
+
+    this.platform.move();
+    this.ball.move();
   },
 
   collideBlocks() {
@@ -176,14 +177,46 @@ game.ball = {
       return true;
     }
   },
+  collideWorldBounds() {
+    const x = this.x + this.dx;
+    const y = this.y + this.dy;
+
+    const ballLeftSide = x;
+    const ballRightSide = x + this.width;
+    const ballTopSide = y;
+    const ballBottomSide = y + this.height;
+
+    const worldLeftSide = 0;
+    const worldRightSide = game.width;
+    const worldTopSide = 0;
+    const worldBottomSide = game.height;
+
+    if (ballLeftSide < worldLeftSide) {
+      this.x = 0;
+      this.dx = this.velocity;
+    }
+    if (ballRightSide > worldRightSide) {
+      this.x = worldRightSide - this.width;
+      this.dx = -this.velocity;
+    }
+    if (ballTopSide < worldTopSide) {
+      this.y = 0;
+      this.dy = this.velocity;
+    }
+    if (ballBottomSide > worldBottomSide) {
+      this.y = worldBottomSide - this.height;
+    }
+  },
   crushBlock(block) {
     block.active = false;
     this.dy = -this.dy;
   },
   bumpPlatform(platform) {
-    this.dy = -this.dy;
-    const touchX = this.x + this.width / 2;
-    this.dx = this.velocity * game.platform.getTouchOffset(touchX);
+    if (this.dy > 0) {
+      this.dy = -this.velocity;
+      const touchX = this.x + this.width / 2;
+      this.dx = this.velocity * game.platform.getTouchOffset(touchX);
+    }
   },
 };
 
@@ -222,7 +255,7 @@ game.platform = {
   getTouchOffset(x) {
     const dif = this.x + this.width - x;
     const offset = this.width - dif;
-    const result = 2 * offset / this.width;
+    const result = (2 * offset) / this.width;
     return result - 1;
   },
 };
