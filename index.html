@@ -8,14 +8,36 @@
 <body>
   <style>
     body {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      height: 100%;
       margin: 0;
       padding: 0;
+      background: #533261;
     }
     canvas {
-      width: 100%;
+      display: block;
+      width: 640px;
+      margin: 0 auto;
+      box-shadow: 0 0 5px 0 #000;
+    }
+    .instructions {
+      position: absolute;
+      top: 10%;
+      left: 10%;
+      font-family: Arial, Helvetica, sans-serif;
+      color: #d8d8d8;
     }
   </style>
   <canvas id="mycanvas" width="640" height="360"></canvas>
+  <div class="instructions">
+    Controls: <br>
+    🡄 🡆 🡅 🡇 arrows - move platform <br>
+    Space - start a game
+  </div>
   <script src="game.js"></script> 
 </body>
 </html>
