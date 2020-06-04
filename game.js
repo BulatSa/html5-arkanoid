@@ -75,10 +75,21 @@ let game = {
     this.platform.move();
     this.ball.move();
 
+    this.collideBlocks();
+    this.collidePlatform();
+  },
+
+  collideBlocks() {
     for (let block of this.blocks) {
       if (this.ball.collide(block)) {
         this.ball.crushBlock(block);
       }
+    }
+  },
+
+  collidePlatform() {
+    if (this.ball.collide(this.platform)) {
+      this.ball.bumpPlatform();
     }
   },
 
@@ -165,11 +176,18 @@ game.ball = {
   crushBlock(element) {
     this.dy = -this.dy;
   },
+  bumpPlatform(platform) {
+    this.dy = -this.dy;
+    const touchX = this.x + this.width / 2;
+    this.dx = this.velocity * game.platform.getTouchOffset(touchX);
+  },
 };
 
 game.platform = {
   x: 280,
   y: 300,
+  width: 100,
+  height: 14,
   velocity: 6,
   dx: 0,
   ball: game.ball,
@@ -196,6 +214,12 @@ game.platform = {
         this.ball.x += this.dx;
       }
     }
+  },
+  getTouchOffset(x) {
+    const dif = this.x + this.width - x;
+    const offset = this.width - dif;
+    const result = 2 * offset / this.width;
+    return result - 1;
   },
 };
 
